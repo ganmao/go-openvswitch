@@ -114,6 +114,22 @@ func (v *VSwitchService) PortToBridge(port string) (string, error) {
 	return string(out), nil
 }
 
+// ListInterface lists the interfaces in Open vSwitch.
+func (v *VSwitchService) ListInterface(bridge string) ([]string, error) {
+	output, err := v.exec("list-ifaces", bridge)
+	if err != nil {
+		return nil, err
+	}
+
+	// Do no ports exist?
+	if len(output) == 0 {
+		return nil, nil
+	}
+
+	interfaces := strings.Split(strings.TrimSpace(string(output)), "\n")
+	return interfaces, nil
+}
+
 // GetFailMode gets the FailMode for the specified bridge.
 func (v *VSwitchService) GetFailMode(bridge string) (FailMode, error) {
 	out, err := v.exec("get-fail-mode", bridge)
